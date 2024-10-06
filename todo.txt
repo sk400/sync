@@ -1,0 +1,56 @@
+Authentication
+ - Build the auth UI
+ - Write the logic and implement the functionality
+
+
+CRUD on posts
+
+ - UI
+ - functionality
+
+
+Like, comment, share
+
+
+User profile
+
+ - UI
+ - functionality
+
+
+Friends (add to friends)
+
+Notifications
+
+
+
+Todo
+----
+Find a logo
+signup
+login
+verify
+password reset
+Logout
+
+
+Email and password authentication:-
+
+
+- Write sanity schema for User
+- set up resend and create a sendEmail function
+- create server actions for sign up
+- create a verify server action
+- verify user using the code
+- Setup auth.js to handle signin
+- Write signin logic to signin user
+
+
+Google authentication
+
+- 
+
+
+completed
+---------
+- complete UI of all the pages

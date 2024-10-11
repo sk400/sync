@@ -12,23 +12,54 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-});
+import { forgotPasswordSchema } from "@/schemas/forgotPasswordSchema";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { ApiResponse } from "@/types/apiResponse";
+import axios, { AxiosError } from "axios";
 
 export function ForgotPasswordComponent() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof forgotPasswordSchema>>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof forgotPasswordSchema>) {
+    try {
+      setIsSubmitting(true);
+      const response = await axios.post("/api/forgot-password", values);
+
+      if (response.data.success === false) {
+        toast({
+          description: response.data.message,
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      toast({
+        description: response.data.message,
+      });
+
+      form.reset();
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      console.log(error);
+      toast({
+        title: "Error",
+        description:
+          axiosError.response?.data?.message ??
+          "Unexpected error occured while sending the password reset email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -61,8 +92,12 @@ export function ForgotPasswordComponent() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-[#0C1024] text-[#fff]">
-              Continue
+            <Button
+              type="submit"
+              className="w-full bg-[#0C1024] text-[#fff]"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Continue"}
             </Button>
           </form>
         </Form>

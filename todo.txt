@@ -37,13 +37,22 @@ Logout
 Email and password authentication:-
 
 
-- Write sanity schema for User
+
 - set up resend and create a sendEmail function
 - create server actions for sign up
+- check username
 - create a verify server action
 - verify user using the code
 - Setup auth.js to handle signin
 - Write signin logic to signin user
+
+
+- resend verification code
+- checking username message
+- verification code matching error
+
+
+
 
 
 Google authentication
@@ -54,3 +63,13 @@ Google authentication
 completed
 ---------
 - complete UI of all the pages
+- Write sanity schema for User
+
+
+
+
+
+
+
+
+skdeveloper101@gmail.com

@@ -12,22 +12,17 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-});
+import { signinWithEmailSchema } from "@/schemas/signinWithEmailSchema";
 
 const SignInWithEmail = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof signinWithEmailSchema>>({
+    resolver: zodResolver(signinWithEmailSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof signinWithEmailSchema>) {
     console.log(values);
   }
 

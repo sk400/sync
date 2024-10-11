@@ -1,12 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-
+import axios, { AxiosError } from "axios";
 import { Input } from "@/components/ui/input";
 import { Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { signupSchema } from "@/schemas/signupSchema";
+import { useState, useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -15,25 +17,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-});
+import { useToast } from "@/hooks/use-toast";
+import { ApiResponse } from "@/types/apiResponse";
+import { useDebounceCallback } from "usehooks-ts";
+import { useRouter } from "next/navigation";
 
 export function SignUpFormComponent() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [username, setUsername] = useState("");
+  const [usernameMessage, setUsernameMessage] = useState("");
+  const debounced = useDebounceCallback(setUsername, 300);
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof signupSchema>>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -42,9 +40,72 @@ export function SignUpFormComponent() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    form.reset();
+  useEffect(() => {
+    const checkUsernameAvailability = async () => {
+      if (username.length > 0) {
+        try {
+          setUsernameMessage("");
+          const response = await axios.post("/api/check-username", {
+            username: username.toLowerCase().trim(),
+          });
+
+          if (response.data.success === false) {
+            setUsernameMessage(response.data.message);
+          }
+
+          setUsernameMessage(response.data.message);
+        } catch (error) {
+          const axiosError = error as AxiosError<ApiResponse>;
+          setUsernameMessage(
+            axiosError.response?.data?.message ??
+              "Unexpected error occured while checking username"
+          );
+        }
+      } else {
+        setUsernameMessage("");
+      }
+    };
+    checkUsernameAvailability();
+  }, [username]);
+
+  // skdeveloper101@gmail.com
+  // Saumyakanta Panda
+
+  async function onSubmit(values: z.infer<typeof signupSchema>) {
+    try {
+      setIsSubmitting(true);
+      const response = await axios.post("/api/sign-up", values);
+
+      if (response.data.success === false) {
+        toast({
+          title: "Sign up failed",
+          description: response.data.message,
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      toast({
+        title: "Sign up successful",
+        description: response.data.message,
+      });
+
+      router.replace(`/verify?email=${values.email}`);
+      form.reset();
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      console.log(error);
+      toast({
+        title: "Sign up failed",
+        description:
+          axiosError.response?.data?.message ??
+          "Unexpected error occured while submitting form",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -92,6 +153,33 @@ export function SignUpFormComponent() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Username"
+                        autoComplete="off"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          debounced(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                    {usernameMessage.length > 0 && (
+                      <p
+                        className={`text-sm  ${usernameMessage === "Username is available" ? "text-[#399918]" : "text-[#FF0000]"}`}
+                      >
+                        {usernameMessage}
+                      </p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
@@ -102,6 +190,7 @@ export function SignUpFormComponent() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -118,22 +207,7 @@ export function SignUpFormComponent() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Username"
-                        autoComplete="off"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
               <FormField
                 control={form.control}
                 name="password"
@@ -151,8 +225,12 @@ export function SignUpFormComponent() {
                 )}
               />
 
-              <Button type="submit" className="w-full bg-[#0C1024] text-[#fff]">
-                Continue
+              <Button
+                type="submit"
+                className="w-full bg-[#0C1024] text-[#fff]"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Sign up"}
               </Button>
             </form>
           </Form>

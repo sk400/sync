@@ -14,28 +14,75 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-});
+import { signinSchema } from "@/schemas/signinSchema";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+// import { signInWithCredentials } from "@/actions";
+import { signIn } from "next-auth/react";
 
 const SignInForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<z.infer<typeof signinSchema>>({
+    resolver: zodResolver(signinSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    form.reset();
+  // skdeveloper101@gmail.com
+  // saumya123@gmail.com
+
+  async function onSubmit(values: z.infer<typeof signinSchema>) {
+    try {
+      setIsSubmitting(true);
+      const response = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      console.log(response);
+
+      if (response?.error) {
+        toast({
+          title: "Sign in failed",
+          description: response?.code,
+          variant: "destructive",
+        });
+
+        return;
+      } else {
+        toast({
+          title: "Sign in successful",
+          description: `Welcome back ${values.email}`,
+        });
+
+        router.push("/");
+
+        // form.reset();
+      }
+      // toast({
+      //   title: "Sign in successful",
+      //   description: `Welcome back ${values.email}`,
+      // });
+      // router.push("/");
+    } catch (error) {
+      console.log(error);
+
+      toast({
+        title: "Sign in failed",
+        description:
+          (error as Error).message ??
+          "Unexpected error occured while signing in",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -122,8 +169,12 @@ const SignInForm = () => {
                 )}
               />
 
-              <Button type="submit" className="w-full bg-[#0C1024] text-[#fff]">
-                Continue
+              <Button
+                type="submit"
+                className="w-full bg-[#0C1024] text-[#fff]"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Sign in"}
               </Button>
             </form>
           </Form>

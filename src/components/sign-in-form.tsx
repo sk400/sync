@@ -18,7 +18,6 @@ import { signinSchema } from "@/schemas/signinSchema";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { signInWithCredentials } from "@/actions";
 import { signIn } from "next-auth/react";
 
 const SignInForm = () => {
@@ -117,7 +116,7 @@ const SignInForm = () => {
             {/* Email sign in button */}
             <Button variant="outline" className="w-full">
               <Mail className="w-5 h-5 mr-2" />
-              Log in with Email
+              <Link href="/signin-with-email">Log in with Email</Link>
             </Button>
           </div>
           <div className="flex items-center justify-center">

@@ -120,7 +120,7 @@ export const POST = async (req: NextRequest) => {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: "Something went wrong. Please try again later." },
+      { message: (error as Error).message },
       { status: 500 }
     );
   }

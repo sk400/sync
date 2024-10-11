@@ -7,3 +7,5 @@ export const getUserByUsernameQuery = groq`*[_type == "user" && username == $use
 export const getUserByEmailOrUsername = groq`*[_type == "user" && (email == $email || username == $username)][0]`;
 
 export const getUserByResetPasswordToken = groq`*[_type == "user" && resetPasswordToken == $token][0]`;
+
+export const getUserByMagicLinkTokenQuery = groq`*[_type == "user" && magicLink == $token][0]`;

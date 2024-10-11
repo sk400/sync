@@ -1,24 +1,20 @@
 "use server";
 
-import { signIn } from "./auth";
+import { redirect } from "next/navigation";
+import { signOut } from "./auth";
+import { cookies } from "next/headers";
 
-export const signInWithCredentials = async (credentials: {
-  email: string;
-  password: string;
-}) => {
+export const signoutUser = async () => {
   try {
-    const res = await signIn("credentials", credentials);
-    console.log(res);
-
-    return {
-      success: true,
-      message: "Sign in successfully",
-    };
+    await signOut();
+    cookies().delete("passwordless-signin-token");
+    console.log("Signout successfully");
+    redirect("/sign-in");
   } catch (error) {
-    console.log("Error from server action: " + error);
-    return {
-      success: false,
-      message: error,
-    };
+    console.log("Error from server action to signout user: " + error);
+    // return {
+    //   success: false,
+    //   message: (error as Error).message,
+    // };
   }
 };

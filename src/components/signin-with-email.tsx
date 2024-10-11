@@ -13,8 +13,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { signinWithEmailSchema } from "@/schemas/signinWithEmailSchema";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { ApiResponse } from "@/types/apiResponse";
+import axios, { AxiosError } from "axios";
 
 const SignInWithEmail = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof signinWithEmailSchema>>({
     resolver: zodResolver(signinWithEmailSchema),
     defaultValues: {
@@ -22,8 +29,38 @@ const SignInWithEmail = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof signinWithEmailSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof signinWithEmailSchema>) {
+    try {
+      setIsSubmitting(true);
+      const response = await axios.post("/api/signin-with-email/link", values);
+
+      if (response.data.success === false) {
+        toast({
+          description: response.data.message,
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      toast({
+        description: response.data.message,
+      });
+
+      form.reset();
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      console.log(error);
+      toast({
+        title: "Error",
+        description:
+          axiosError.response?.data?.message ??
+          "Unexpected error occured while sending signin link email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -34,7 +71,7 @@ const SignInWithEmail = () => {
             Enter your email
           </h2>
           <p className="mt-2 text-sm text-gray-600 w-[80%] mx-auto">
-            We will send a secure link for instant access to your account.
+            We will send a secure link to signin without remembering a password.
           </p>
         </div>
         <Form {...form}>
@@ -56,8 +93,12 @@ const SignInWithEmail = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-[#0C1024] text-[#fff]">
-              Send link
+            <Button
+              type="submit"
+              className="w-full bg-[#0C1024] text-[#fff]"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Send Link"}
             </Button>
           </form>
         </Form>

@@ -5,8 +5,11 @@ import { auth } from "./auth";
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const session = await auth();
+  const token = request.cookies.get("passwordless-signin-token");
 
   const pathname = request.nextUrl.pathname;
+
+  const authenticated = session?.user.email || token;
 
   const isPublicPage =
     pathname === "/sign-in" ||
@@ -14,13 +17,14 @@ export async function middleware(request: NextRequest) {
     pathname === "/verify" ||
     pathname === "/reset-password" ||
     pathname === "/forgot-password" ||
-    pathname === "/login-with-email";
+    pathname === "/signin-with-email" ||
+    pathname === "/verify-link";
 
-  if (!isPublicPage && !session?.user.email) {
+  if (!isPublicPage && !authenticated) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  if (isPublicPage && session?.user.email) {
+  if (isPublicPage && authenticated) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 }
@@ -34,6 +38,7 @@ export const config = {
     "/verify",
     "/reset-password",
     "/forgot-password",
-    "/login-with-email",
+    "/signin-with-email",
+    "/verify-link",
   ],
 };

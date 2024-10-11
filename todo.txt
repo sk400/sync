@@ -26,30 +26,15 @@ Notifications
 
 Todo
 ----
-Find a logo
-signup
-login
-verify
-password reset
-Logout
 
-
-Email and password authentication:-
+logout (for all methods)
+layout of the web app
+profile (edit)
 
 
 
-- set up resend and create a sendEmail function
-- create server actions for sign up
-- check username
-- create a verify server action
-- verify user using the code
-- Setup auth.js to handle signin
-- Write signin logic to signin user
 
-
-- resend verification code
-- checking username message
-- verification code matching error
+Magic link auth:-
 
 
 
@@ -60,10 +45,36 @@ Google authentication
 - 
 
 
+
+Bug fixing and improvements
+-----------------------------
+
+Email and password authentication:-
+
+
+- resend verification code
+- checking username message
+- verification code matching error
+- Onboarding page
+
+
+
+
 completed
 ---------
+
+Email and password authentication:-
+
 - complete UI of all the pages
 - Write sanity schema for User
+- set up resend and create a sendEmail function
+- create server actions for sign up
+- check username
+- create a verify server action
+- verify user using the code
+- Setup auth.js to handle signin
+- Write signin logic to signin user
+
 
 
 
@@ -73,3 +84,8 @@ completed
 
 
 skdeveloper101@gmail.com
+
+Prompts
+-------
+
+Create an email template using "@react-email/components" to send the magic link to user's email. 

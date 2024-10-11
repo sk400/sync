@@ -1,6 +1,7 @@
 // import { getUserByEmailQuery } from "@/lib/sanityQueries";
-import { signOut } from "@/auth";
-import { Button } from "@/components/ui/button";
+
+
+import SignoutButton from "@/components/shared/SignoutButton";
 import { getUserByEmailOrUsername } from "@/lib/sanityQueries";
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
@@ -15,20 +16,15 @@ export default async function Home() {
     username: "skdeveloper101",
   });
 
+  
+
   console.log(user);
 
   return (
     <main>
       <h1>Smsung Galaxy Book 4</h1>
 
-      <form
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-      >
-        <Button type="submit">Sign Out</Button>
-      </form>
+     <SignoutButton />
     </main>
   );
 }

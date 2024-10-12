@@ -1,5 +1,5 @@
 "use client";
-
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import axios, { AxiosError } from "axios";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ApiResponse } from "@/types/apiResponse";
 import { useDebounceCallback } from "usehooks-ts";
 import { useRouter } from "next/navigation";
+// import { signIn } from "@/auth";
 
 export function SignUpFormComponent() {
   const { toast } = useToast();
@@ -115,7 +116,11 @@ export function SignUpFormComponent() {
           {/* Google sign in button and Email sign in button */}
           <div className="space-y-4">
             {/* Google sign in button */}
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => signIn("google")}
+            >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"

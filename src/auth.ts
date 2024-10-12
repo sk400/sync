@@ -1,11 +1,13 @@
 import NextAuth, { CredentialsSignin, DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { signinSchema } from "./schemas/signinSchema";
 import { client } from "./sanity/lib/client";
 import { getUserByEmailQuery } from "./lib/sanityQueries";
 import "next-auth";
 import "next-auth/jwt";
+import { v4 as uuidv4 } from "uuid";
 
 declare module "next-auth" {
   interface Session {
@@ -91,6 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return user;
       },
     }),
+    Google,
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -113,6 +116,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session;
     },
+    async signIn({ account, profile }) {
+      console.log("Account:-");
+      console.log(account);
+      console.log("Profile:-");
+      console.log(profile);
+
+      if (account?.provider === "google") {
+        const user = await client.fetch(getUserByEmailQuery, {
+          email: profile?.email,
+        });
+
+        if (!user) {
+          const doc = {
+            _type: "user",
+            _id: uuidv4(),
+            name: profile?.name,
+            email: profile?.email,
+            verified: profile?.email_verified,
+            username: "",
+          };
+          await client.createIfNotExists(doc);
+        }
+      }
+
+      return true;
+    },
   },
   pages: {
     signIn: "/sign-in",
@@ -122,3 +151,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   secret: process.env.AUTH_SECRET,
 });
+
+// skdeveloper101@gmail.com

@@ -1,7 +1,7 @@
-import { VerificationCode } from "@/components/verification-code";
+import { VerifyCode } from "@/components/auth";
 
 const Verify = () => {
-  return <VerificationCode />;
+  return <VerifyCode />;
 };
 
 export default Verify;

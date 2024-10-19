@@ -35,7 +35,7 @@ export const POST = async (req: NextRequest) => {
 
     if (user.verifyCode !== code) {
       return NextResponse.json(
-        { message: "Code doesn't match", success: false },
+        { message: "Code doesn't match. Please try again", success: false },
         { status: 401 }
       );
     }

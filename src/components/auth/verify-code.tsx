@@ -8,11 +8,12 @@ import axios, { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { ApiResponse } from "@/types/apiResponse";
 
-export function VerificationCode() {
+export default function VerifyCode() {
   const [code, setCode] = useState(["", "", "", ""]);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
-  const email = window.location.search.split("=")[1];
+  const email = window.location?.search?.split("=")[1];
   const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -74,9 +75,45 @@ export function VerificationCode() {
     }
   };
 
+  const resendCode = async () => {
+    if (!email) return;
+
+    try {
+      setResending(true);
+      const response = await axios.post("/api/resend-code", { email });
+
+      if (response.data.success === false) {
+        toast({
+          title: "Fail to send the verification code",
+          description: response.data.message,
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      toast({
+        title: "Code resent",
+        description: "Verification code has been resent to your email",
+      });
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      console.log(error);
+      toast({
+        title: "Failed to resend code",
+        description:
+          axiosError.response?.data?.message ??
+          "Unexpected error occured while resending verification code",
+        variant: "destructive",
+      });
+    } finally {
+      setResending(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-md">
+      <div className="p-8 bg-white rounded-lg sm:shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Enter verification code
         </h2>
@@ -106,6 +143,12 @@ export function VerificationCode() {
         >
           {verifying ? "Verifying..." : "Verify"}
         </Button>
+        <p
+          className="text-center text-sm text-gray-600 mt-6 font-semibold cursor-pointer"
+          onClick={resendCode}
+        >
+          {resending ? "Resending..." : "Resend code"}
+        </p>
       </div>
     </div>
   );

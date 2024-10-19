@@ -1,14 +1,11 @@
 "use client";
-import { signIn } from "next-auth/react";
+
 import { Button } from "@/components/ui/button";
-import axios, { AxiosError } from "axios";
 import { Input } from "@/components/ui/input";
 import { Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { signupSchema } from "@/schemas/signupSchema";
-import { useState, useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -17,91 +14,69 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
+import { signinSchema } from "@/schemas/signinSchema";
 import { useToast } from "@/hooks/use-toast";
-import { ApiResponse } from "@/types/apiResponse";
-import { useDebounceCallback } from "usehooks-ts";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { signIn } from "@/auth";
+import { signIn } from "next-auth/react";
 
-export function SignUpFormComponent() {
+const SignInForm = () => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [username, setUsername] = useState("");
-  const [usernameMessage, setUsernameMessage] = useState("");
-  const debounced = useDebounceCallback(setUsername, 300);
   const router = useRouter();
-
-  const form = useForm<z.infer<typeof signupSchema>>({
-    resolver: zodResolver(signupSchema),
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<z.infer<typeof signinSchema>>({
+    resolver: zodResolver(signinSchema),
     defaultValues: {
-      name: "",
       email: "",
-      username: "",
       password: "",
     },
   });
 
-  useEffect(() => {
-    const checkUsernameAvailability = async () => {
-      if (username.length > 0) {
-        try {
-          setUsernameMessage("");
-          const response = await axios.post("/api/check-username", {
-            username: username.toLowerCase().trim(),
-          });
-
-          if (response.data.success === false) {
-            setUsernameMessage(response.data.message);
-          }
-
-          setUsernameMessage(response.data.message);
-        } catch (error) {
-          const axiosError = error as AxiosError<ApiResponse>;
-          setUsernameMessage(
-            axiosError.response?.data?.message ??
-              "Unexpected error occured while checking username"
-          );
-        }
-      } else {
-        setUsernameMessage("");
-      }
-    };
-    checkUsernameAvailability();
-  }, [username]);
-
   // skdeveloper101@gmail.com
-  // Saumyakanta Panda
+  // saumya123@gmail.com
 
-  async function onSubmit(values: z.infer<typeof signupSchema>) {
+  async function onSubmit(values: z.infer<typeof signinSchema>) {
     try {
       setIsSubmitting(true);
-      const response = await axios.post("/api/sign-up", values);
+      const response = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
 
-      if (response.data.success === false) {
+      console.log(response);
+
+      if (response?.error) {
         toast({
-          title: "Sign up failed",
-          description: response.data.message,
+          title: "Sign in failed",
+          description: response?.code,
           variant: "destructive",
         });
 
         return;
+      } else {
+        toast({
+          title: "Sign in successful",
+          description: `Welcome back ${values.email}`,
+        });
+
+        router.push("/");
+
+        // form.reset();
       }
-
-      toast({
-        title: "Sign up successful",
-        description: response.data.message,
-      });
-
-      router.replace(`/verify?email=${values.email}`);
-      form.reset();
+      // toast({
+      //   title: "Sign in successful",
+      //   description: `Welcome back ${values.email}`,
+      // });
+      // router.push("/");
     } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>;
       console.log(error);
+
       toast({
-        title: "Sign up failed",
+        title: "Sign in failed",
         description:
-          axiosError.response?.data?.message ??
-          "Unexpected error occured while submitting form",
+          (error as Error).message ??
+          "Unexpected error occured while signing in",
         variant: "destructive",
       });
     } finally {
@@ -140,12 +115,12 @@ export function SignUpFormComponent() {
                 />
                 <path fill="none" d="M1 1h22v22H1z" />
               </svg>
-              Sign up with Google
+              Sign in with Google
             </Button>
             {/* Email sign in button */}
             <Button variant="outline" className="w-full">
               <Mail className="w-5 h-5 mr-2" />
-              Log in with Email
+              <Link href="/signin-with-email">Sign in with Email</Link>
             </Button>
           </div>
           <div className="flex items-center justify-center">
@@ -156,46 +131,6 @@ export function SignUpFormComponent() {
           {/* Sign up form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Username"
-                        autoComplete="off"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          debounced(e.target.value);
-                        }}
-                      />
-                    </FormControl>
-                    {usernameMessage.length > 0 && (
-                      <p
-                        className={`text-sm  ${usernameMessage === "Username is available" ? "text-[#399918]" : "text-[#FF0000]"}`}
-                      >
-                        {usernameMessage}
-                      </p>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Name" {...field} autoComplete="off" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="email"
@@ -212,7 +147,6 @@ export function SignUpFormComponent() {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="password"
@@ -225,6 +159,14 @@ export function SignUpFormComponent() {
                         {...field}
                       />
                     </FormControl>
+                    <div className="flex justify-end w-full">
+                      <Link
+                        href="/forgot-password"
+                        className="text-right text-sm text-gray-600 "
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -235,23 +177,23 @@ export function SignUpFormComponent() {
                 className="w-full bg-[#0C1024] text-[#fff]"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Sign up"}
+                {isSubmitting ? "Submitting..." : "Sign in"}
               </Button>
             </form>
           </Form>
         </div>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
-            href="/sign-in"
+            href="/sign-up"
             className="font-medium text-gray-900 hover:text-gray-800"
           >
-            Sign in
+            Sign up
           </Link>
         </p>
       </div>
     </div>
   );
-}
+};
 
-// 4C68D5
+export default SignInForm;

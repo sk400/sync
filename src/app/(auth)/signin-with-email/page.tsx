@@ -1,4 +1,4 @@
-import SignInWithEmail from "@/components/signin-with-email";
+import { SignInWithEmail } from "@/components/auth";
 
 const LoginWithEmail = () => {
   return <SignInWithEmail />;

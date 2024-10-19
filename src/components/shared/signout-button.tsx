@@ -49,8 +49,9 @@ const SignoutButton = () => {
           signOut();
           signoutUser();
         }}
+        variant="ghost"
       >
-        Sign Out
+        Signout
       </Button>
     </div>
   );

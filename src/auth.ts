@@ -117,10 +117,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
     async signIn({ account, profile }) {
-      console.log("Account:-");
-      console.log(account);
-      console.log("Profile:-");
-      console.log(profile);
+      // console.log("Account:-");
+      // console.log(account);
+      // console.log("Profile:-");
+      // console.log(profile);
 
       if (account?.provider === "google") {
         const user = await client.fetch(getUserByEmailQuery, {

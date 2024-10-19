@@ -1,11 +1,14 @@
 "use client";
-
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import axios, { AxiosError } from "axios";
 import { Input } from "@/components/ui/input";
 import { Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { signupSchema } from "@/schemas/signupSchema";
+import { useState, useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -14,69 +17,94 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import { signinSchema } from "@/schemas/signinSchema";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { ApiResponse } from "@/types/apiResponse";
+import { useDebounceCallback } from "usehooks-ts";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 
-const SignInForm = () => {
+export default function SignUpForm() {
   const { toast } = useToast();
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const form = useForm<z.infer<typeof signinSchema>>({
-    resolver: zodResolver(signinSchema),
+  const [isChecking, setIsChecking] = useState(false);
+  const [username, setUsername] = useState("");
+  const [usernameMessage, setUsernameMessage] = useState("");
+  const debounced = useDebounceCallback(setUsername, 300);
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof signupSchema>>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
+      name: "",
       email: "",
+      username: "",
       password: "",
     },
   });
 
-  // skdeveloper101@gmail.com
-  // saumya123@gmail.com
+  useEffect(() => {
+    const checkUsernameAvailability = async () => {
+      if (username.length > 0) {
+        try {
+          setUsernameMessage("");
+          setIsChecking(true);
+          const response = await axios.post("/api/check-username", {
+            username: username.toLowerCase().trim(),
+          });
 
-  async function onSubmit(values: z.infer<typeof signinSchema>) {
+          if (response.data.success === false) {
+            setUsernameMessage(response.data.message);
+          }
+
+          setUsernameMessage(response.data.message);
+        } catch (error) {
+          const axiosError = error as AxiosError<ApiResponse>;
+          setUsernameMessage(
+            axiosError.response?.data?.message ??
+              "Unexpected error occured while checking username"
+          );
+        } finally {
+          setIsChecking(false);
+        }
+      } else {
+        setUsernameMessage("");
+      }
+    };
+    checkUsernameAvailability();
+  }, [username]);
+
+  // skdeveloper101@gmail.com
+  // Saumyakanta Panda
+
+  async function onSubmit(values: z.infer<typeof signupSchema>) {
     try {
       setIsSubmitting(true);
-      const response = await signIn("credentials", {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
+      const response = await axios.post("/api/sign-up", values);
 
-      console.log(response);
-
-      if (response?.error) {
+      if (response.data.success === false) {
         toast({
-          title: "Sign in failed",
-          description: response?.code,
+          title: "Sign up failed",
+          description: response.data.message,
           variant: "destructive",
         });
 
         return;
-      } else {
-        toast({
-          title: "Sign in successful",
-          description: `Welcome back ${values.email}`,
-        });
-
-        router.push("/");
-
-        // form.reset();
       }
-      // toast({
-      //   title: "Sign in successful",
-      //   description: `Welcome back ${values.email}`,
-      // });
-      // router.push("/");
-    } catch (error) {
-      console.log(error);
 
       toast({
-        title: "Sign in failed",
+        title: "Sign up successful",
+        description: response.data.message,
+      });
+
+      router.replace(`/verify?email=${values.email}`);
+      form.reset();
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      console.log(error);
+      toast({
+        title: "Sign up failed",
         description:
-          (error as Error).message ??
-          "Unexpected error occured while signing in",
+          axiosError.response?.data?.message ??
+          "Unexpected error occured while submitting form",
         variant: "destructive",
       });
     } finally {
@@ -89,9 +117,13 @@ const SignInForm = () => {
       <div className="max-w-[450px] w-full space-y-8 py-10 ">
         <div className=" space-y-6">
           {/* Google sign in button and Email sign in button */}
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-4">
             {/* Google sign in button */}
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => signIn("google")}
+            >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
@@ -116,7 +148,7 @@ const SignInForm = () => {
             {/* Email sign in button */}
             <Button variant="outline" className="w-full">
               <Mail className="w-5 h-5 mr-2" />
-              <Link href="/signin-with-email">Log in with Email</Link>
+              <Link href="/signin-with-email">Sign in with Email</Link>
             </Button>
           </div>
           <div className="flex items-center justify-center">
@@ -126,7 +158,51 @@ const SignInForm = () => {
           </div>
           {/* Sign up form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-2 sm:space-y-4"
+            >
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Username"
+                        autoComplete="off"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          debounced(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                    {isChecking && <p className="text-sm">Checking...</p>}
+                    {usernameMessage.length > 0 && (
+                      <p
+                        className={`text-sm  ${usernameMessage === "Username is available" ? "text-[#399918]" : "text-[#FF0000]"}`}
+                      >
+                        {usernameMessage}
+                      </p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Name" {...field} autoComplete="off" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -143,6 +219,7 @@ const SignInForm = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="password"
@@ -155,14 +232,6 @@ const SignInForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <div className="flex justify-end w-full">
-                      <Link
-                        href="/forgot-password"
-                        className="text-right text-sm text-gray-600 "
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -173,23 +242,23 @@ const SignInForm = () => {
                 className="w-full bg-[#0C1024] text-[#fff]"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Sign in"}
+                {isSubmitting ? "Submitting..." : "Sign up"}
               </Button>
             </form>
           </Form>
         </div>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
+          Have an account?{" "}
           <Link
-            href="/sign-up"
+            href="/sign-in"
             className="font-medium text-gray-900 hover:text-gray-800"
           >
-            Sign up
+            Sign in
           </Link>
         </p>
       </div>
     </div>
   );
-};
+}
 
-export default SignInForm;
+// 4C68D5

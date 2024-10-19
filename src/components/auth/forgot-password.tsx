@@ -18,7 +18,7 @@ import { useState } from "react";
 import { ApiResponse } from "@/types/apiResponse";
 import axios, { AxiosError } from "axios";
 
-export function ForgotPasswordComponent() {
+export default function ForgotPasswordComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const form = useForm<z.infer<typeof forgotPasswordSchema>>({

@@ -27,34 +27,16 @@ Notifications
 Todo
 ----
 
-logout (for all methods)
-layout of the web app
+
+
 profile (edit)
 
 
 
 
-Magic link auth:-
 
 
 
-
-
-Google authentication
-
-- 
-
-
-
-Bug fixing and improvements
------------------------------
-
-Email and password authentication:-
-
-
-- resend verification code
-- checking username message
-- verification code matching error
 - Onboarding page
 
 
@@ -74,8 +56,14 @@ Email and password authentication:-
 - verify user using the code
 - Setup auth.js to handle signin
 - Write signin logic to signin user
-
-
+- checking username message
+- resend verification code
+- verification code matching error
+- Magic link auth
+- Google authentication
+- logout (for all methods)
+- all auth pages mobile responsive
+- layout of the web app
 
 
 
@@ -88,4 +76,18 @@ skdeveloper101@gmail.com
 Prompts
 -------
 
+One
+----
 Create an email template using "@react-email/components" to send the magic link to user's email. 
+
+
+Two
+----
+create POST route handler to resend the verifification code in email address. 
+get the email from the "req.json()"
+validate using zod and return error response if invalid
+check user with the email in sanity and return error response if !exist
+check verified or not and return a response to sign in if they are verified
+if the user is not verified then create a 4 digit code and expiry date
+update user in sanity and send the verification email
+return error response

@@ -19,7 +19,7 @@ import {
 import { resetPasswordSchema } from "@/schemas/resetPasswordSchema";
 import { useState } from "react";
 
-export function ResetPasswordComponent() {
+export default function ResetPasswordComponent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();

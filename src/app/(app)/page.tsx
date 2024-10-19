@@ -1,6 +1,5 @@
 // import { getUserByEmailQuery } from "@/lib/sanityQueries";
 
-import SignoutButton from "@/components/shared/SignoutButton";
 // import { getUserByEmailOrUsername } from "@/lib/sanityQueries";
 // import { client } from "@/sanity/lib/client";
 // import { groq } from "next-sanity";
@@ -20,8 +19,6 @@ export default async function Home() {
   return (
     <main>
       <h1>Smsung Galaxy Book 4</h1>
-
-      <SignoutButton />
     </main>
   );
 }

@@ -40,5 +40,6 @@ export const config = {
     "/forgot-password",
     "/signin-with-email",
     "/verify-link",
+    "/profile",
   ],
 };

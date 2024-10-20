@@ -30,7 +30,7 @@ const SidebarItems = [
 
 const Sidebar = () => {
   return (
-    <aside className="pt-7 pl-7">
+    <aside className="pt-7 pl-7 ">
       <Card>
         <img
           src="https://cdn.pixabay.com/photo/2023/06/18/12/17/meadow-8071932_640.jpg"

@@ -29,7 +29,10 @@ Todo
 
 
 
-profile (edit)
+- top nav customise  
+- settings customise 
+- Edit profile functionality
+- populate real user info in navbar and sidebar
 
 
 

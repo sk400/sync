@@ -14,7 +14,7 @@ const BottomBar = () => {
   const isProfilePage = pathname.includes("/profile");
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 sm:px-6">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 sm:px-6 bg-[#fff]">
       <div className="flex justify-between items-center max-w-md mx-auto">
         <Link href="/" className="flex flex-col items-center">
           <FiHome

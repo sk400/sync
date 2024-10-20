@@ -8,10 +8,10 @@ import { FiUser, FiSend } from "react-icons/fi";
 
 const Navbar = () => {
   return (
-    <header className="bg-[#FFFFFF]">
+    <header className="bg-[#FFFFFF] fixed top-0 left-0 right-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <Image src={logo} alt="Sync Logo" width={80} height={80} />
+          <Image src={logo} alt="Sync Logo" width={100} height={100} />
         </div>
         <Input
           type="search"

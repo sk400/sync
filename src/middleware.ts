@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  const authenticated = session?.user.email || token;
+  const authenticated = session?.user?.email || token;
 
   const isPublicPage =
     pathname === "/sign-in" ||

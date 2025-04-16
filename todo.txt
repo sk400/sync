@@ -70,9 +70,32 @@ Email and password authentication:-
 
 
 
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+Todo (updated)
+-------------------
+
+1. page creation for all routes
+2. rofile page ui complete
+3. Backend integration and functionality
+4. CRUD on feeds
+5. like, share, comment
+6. notifications ui 
+7. notifications functionality (app notification, push notification, email updates)
+8. chat ui
+9. chat functionality
+10.chat with AI functionality
+11. 
+
+
+completed 
+----------
+1. page creation for all routes
 
 
 
+-------------------------------------------------------------------------------------------------------------------------------------------
 
 skdeveloper101@gmail.com
 
@@ -94,3 +117,8 @@ check verified or not and return a response to sign in if they are verified
 if the user is not verified then create a 4 digit code and expiry date
 update user in sanity and send the verification email
 return error response
+
+
+
+
+

@@ -39,6 +39,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FiUploadCloud } from "react-icons/fi";
+import { PostCardType } from "@/types/next-auth";
 
 type MainTab = "my-posts" | "saved-posts" | "settings";
 type SettingsTabType = "general" | "account" | "logout";
@@ -188,16 +189,17 @@ export function ProfilePageComponent() {
               <div className="space-y-4">
                 <PostCard
                   author="Robert Fox"
-                  authorImage="/placeholder-user.jpg"
+                  authorImage="https://cdn.pixabay.com/photo/2018/12/20/23/55/tiger-3887020_1280.jpg"
                   content="Received a lot of questions about breaking into the tech industry lately. If you're starting out or looking to switch careers, feel free to connect with me. I'm here to help and share insights! 📚"
                   timestamp="3 days ago"
+                  image="https://cdn.pixabay.com/photo/2019/09/29/17/21/greece-4513852_1280.jpg"
                 />
                 <PostCard
                   author="Robert Fox"
-                  authorImage="/placeholder-user.jpg"
+                  authorImage="https://cdn.pixabay.com/photo/2018/12/20/23/55/tiger-3887020_1280.jpg"
                   content="Today marks 5 years in the software engineering field. Grateful for all the opportunities and growth along the way. Here's to many more years of coding excellence!"
                   timestamp="27 July, 2022"
-                  image="/placeholder.svg"
+                  image="https://cdn.pixabay.com/photo/2019/09/29/17/21/greece-4513852_1280.jpg"
                 />
               </div>
             </TabsContent>
@@ -205,20 +207,21 @@ export function ProfilePageComponent() {
               <div className="space-y-4">
                 <PostCard
                   author="Bessie Cooper"
-                  authorImage="/placeholder-user.jpg"
+                  authorImage="https://cdn.pixabay.com/photo/2018/12/20/23/55/tiger-3887020_1280.jpg"
                   content="In today's fast-paced, digitally driven world, digital marketing is not just a strategy. It's a necessity for businesses of all sizes. 📊"
                   timestamp="7 hours ago"
+                  image="https://cdn.pixabay.com/photo/2019/09/29/17/21/greece-4513852_1280.jpg"
                 />
                 <PostCard
                   author="Jacob Jones"
-                  authorImage="/placeholder-user.jpg"
+                  authorImage="https://cdn.pixabay.com/photo/2018/12/20/23/55/tiger-3887020_1280.jpg"
                   content="Prepare to be dazzled by our latest collection! From trendy fashion to must-have gadgets, we've got something for everyone."
                   timestamp="1 day ago"
-                  image="/placeholder.svg"
+                  image="https://cdn.pixabay.com/photo/2019/09/29/17/21/greece-4513852_1280.jpg"
                 />
               </div>
             </TabsContent>
-            <TabsContent value="settings" className="px-4 md:px-0">
+            <TabsContent value="settings" className="px-4 md:px-0 ">
               <h4 className="text-md font-semibold hidden md:block px-4 my-4">
                 Settings
               </h4>
@@ -266,7 +269,7 @@ export function ProfilePageComponent() {
                   </TabsTrigger>
                 </TabsList>
                 {/* Md screen tabs */}
-                <TabsList className="hidden md:flex flex-col  bg-[#fff] col-span-1 mt-9 -ml-12">
+                <TabsList className="hidden md:flex flex-col items-center  bg-[#fff] col-span-1 mt-9 -ml-12">
                   <TabsTrigger
                     value="general"
                     onClick={() => setSettingsTab("general")}
@@ -427,37 +430,45 @@ export function ProfilePageComponent() {
   );
 }
 
-function PostCard({ author, authorImage, content, timestamp, image }) {
+function PostCard({
+  author,
+  authorImage,
+  content,
+  timestamp,
+  image,
+}: PostCardType) {
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center">
-          <Avatar className="w-10 h-10 mr-2">
-            <AvatarImage src={authorImage} alt={author} />
+          <Avatar className="w-[56px] h-[56px] rounded-[50%] mr-2">
+            <AvatarImage src={authorImage} alt={author} className="rounded-full" />
             <AvatarFallback>{author[0]}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-semibold">{author}</p>
-            <p className="text-sm text-gray-500">{timestamp}</p>
+            <p className="font-medium  text-[14px]">{author}</p>
+            <p className="text-[12px] text-gray-500">{timestamp}</p>
           </div>
           <Button variant="ghost" size="icon" className="ml-auto">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <p>{content}</p>
-        {image && (
-          <Image
-            src={image}
-            alt="Post image"
-            width={500}
-            height={300}
-            className="mt-4 rounded-lg"
-          />
-        )}
+      <CardContent className="mt-[46px]">
+        <p className="text-[14px] font-normal">{content}</p>
+        {/* {image && (
+         
+        )} */}
+         <div className="w-full h-[247px] relative mt-[24px]">
+            <Image
+              src={image}
+              alt="Post image"
+              fill
+              className=" rounded-lg absolute object-cover"
+            />
+          </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex justify-between mt-[64px]">
         <Button variant="ghost" size="sm">
           <Heart className="mr-2 h-4 w-4" />
           Like

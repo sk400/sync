@@ -77,7 +77,7 @@ Todo (updated)
 -------------------
 
 1. page creation for all routes
-2. rofile page ui complete
+2. profile page ui complete
 3. Backend integration and functionality
 4. CRUD on feeds
 5. like, share, comment
@@ -92,7 +92,7 @@ Todo (updated)
 completed 
 ----------
 1. page creation for all routes
-
+2. profile page ui complete
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------

@@ -82,8 +82,8 @@ export function ProfilePageComponent() {
       <div className="bg-[#fff]  py-5 ">
         <div className="flex px-4 justify-between items-start ">
           {/* User info */}
-          <div className="flex flex-col md:flex-row items-start gap-4 mb-4 sm:mb-6 md:mb-10">
-            <Avatar className="w-20 h-20 rounded-[50%] ">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-4 sm:mb-6 md:mb-10">
+            <Avatar className="w-20 lg:w-[96px] h-20 lg:h-[96px] rounded-[50%] ">
               <AvatarImage
                 src="https://cdn.pixabay.com/photo/2019/11/03/20/11/portrait-4599553_640.jpg"
                 alt="Robert Fox"
@@ -91,8 +91,11 @@ export function ProfilePageComponent() {
               <AvatarFallback>RF</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-lg sm:text-xl font-medium">Robert Fox</h1>
-              <p className="text-sm ">@robert</p>
+              <div className="flex items-center gap-[3.5px]">
+                <h1 className="text-lg sm:text-xl font-medium">Robert Fox</h1>
+                <p className="l">/</p>
+                <p className="text-sm ">@robert</p>
+              </div>
               <p className="text-sm items-stretch hidden md:block mt-3 ">
                 Software Engineer
               </p>
@@ -269,7 +272,7 @@ export function ProfilePageComponent() {
                   </TabsTrigger>
                 </TabsList>
                 {/* Md screen tabs */}
-                <TabsList className="hidden md:flex flex-col items-center  bg-[#fff] col-span-1 mt-9 -ml-12">
+                <TabsList className="hidden w-[200px] md:flex flex-col items-center  bg-[#fff] col-span-1 mt-9 -ml-12">
                   <TabsTrigger
                     value="general"
                     onClick={() => setSettingsTab("general")}
@@ -395,14 +398,14 @@ export function ProfilePageComponent() {
                   </TabsContent>
                   <TabsContent value="account">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Delete Account</h3>
-                      <p className="text-sm text-gray-500">
+                      <h3 className="text-lg font-medium text-[16px]">Delete Account</h3>
+                      <p className="text-[14px] font-normal text-gray-500">
                         This action is irreversible and will permanently delete
                         all your data associated with the account.
                       </p>
                       <Button
                         variant="outline"
-                        className="text-[#B81616] border-[#B81616]"
+                        className="text-[#B81616] border-[#B81616] rounded-[6px] font-medium text-[14px]"
                       >
                         Delete my Account
                       </Button>
@@ -442,7 +445,11 @@ function PostCard({
       <CardHeader>
         <div className="flex items-center">
           <Avatar className="w-[56px] h-[56px] rounded-[50%] mr-2">
-            <AvatarImage src={authorImage} alt={author} className="rounded-full" />
+            <AvatarImage
+              src={authorImage}
+              alt={author}
+              className="rounded-full"
+            />
             <AvatarFallback>{author[0]}</AvatarFallback>
           </Avatar>
           <div>
@@ -459,14 +466,14 @@ function PostCard({
         {/* {image && (
          
         )} */}
-         <div className="w-full h-[247px] relative mt-[24px]">
-            <Image
-              src={image}
-              alt="Post image"
-              fill
-              className=" rounded-lg absolute object-cover"
-            />
-          </div>
+        <div className="w-full h-[247px] relative mt-[24px]">
+          <Image
+            src={image}
+            alt="Post image"
+            fill
+            className=" rounded-lg absolute object-cover"
+          />
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between mt-[64px]">
         <Button variant="ghost" size="sm">
